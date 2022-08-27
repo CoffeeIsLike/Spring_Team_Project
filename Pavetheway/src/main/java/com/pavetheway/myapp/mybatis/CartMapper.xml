@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cart"> 
+	<insert id="insert" parameterType="cartDto">
+		INSERT INTO cart
+		(num, id, code, amount) 
+		VALUES ( cart_seq.NEXTVAL, #{id}, #{code}, #{amount})
+	</insert>
+
+	<select id="getList" resultType="cartDto">
+        SELECT c.num, c.id, s.code, s.name, amount, price, (price*amount) money
+        FROM users u, cart c, shop_list s
+        WHERE u.id=c.id and c.code=s.code and c.id=#{id}
+        ORDER BY num   
+    </select>
+    
+    <select id="productMoney" resultType="cartDto">
+    	SELECT name, SUM(price*amount) money
+    	FROM cart c, shop_list s
+    	WHERE c.code = s.code
+    	GROUP BY name
+    	ORDER BY name
+    </select>
+    
+    <select id="sumMoney" resultType="int">
+    	SELECT NVL(SUM(price*amount), 0) money
+    	FROM cart c, shop_list s
+    	WHERE c.code = s.code AND c.id=#{id}
+    </select>
+    
+    <update id="modifyCart">
+    	UPDATE cart
+    	SET amount = #{amount}
+    	WHERE id = #{id}
+   		AND code = #{code}
+    </update>
+    
+    <delete id="delete">
+    	DELETE FROM cart
+    	WHERE num = #{num}
+    </delete>
+    
+    <delete id="deleteAll">
+    	DELETE FROM cart
+    	WHERE id=#{id}
+    </delete>
+    
+    <select id="countCart" resultType="int">
+		SELECT COUNT(*)
+		FROM cart
+		WHERE id = #{id}
+		AND code = #{code}
+	</select>
+	
+	<update id="updateCart">
+		UPDATE cart
+		SET amount = amount + #{amount}
+		WHERE num = #{num}
+	</update>
+</mapper>
+
+
+
+
+	
